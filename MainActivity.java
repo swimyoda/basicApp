@@ -1,3 +1,7 @@
+
+//this is the one that attempts to make and destroy buttons
+
+
 package com.example.nick.basicapp;
 
 import android.app.Activity;
