@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
@@ -40,17 +41,35 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         resources = getResources();
 
-        DownloadTask task = new DownloadTask();
+        //DownloadTask task = new DownloadTask();
         // task.execute("http://api.openweathermap.org/data/2.5/weather?q=London,uk");
-        task.execute("http://api.openweathermap.org/data/2.5/weather?q={Boston}&APPID=adf401838d67c27778aeefe3f0b9f239");
+        //task.execute("http://api.openweathermap.org/data/2.5/weather?q={Boston}&APPID=adf401838d67c27778aeefe3f0b9f239");
     }
 
     public void click(View view)
     {
-        JSONObject json;
+        JSONObject fullFile;
         JSONArray QAs;
+
         JSONObject who;
-        JSONArray answers;
+        JSONArray answersWho;
+
+        JSONObject what;
+        JSONArray categoriesWhat;
+        ArrayList<JSONObject> categoryNamesWhat = new ArrayList<JSONObject>;
+        ArrayList<JSONArray> answersWhat = new ArrayList<JSONArray>;
+
+        JSONObject how;
+        JSONArray answersHow;
+
+        JSONObject why;
+        JSONArray answersWhy;
+
+        JSONObject where;
+        JSONArray answersWhere;
+
+        JSONObject when;
+        JSONArray answersWhen;
         try
         {
             //Load the file from assets folder - don't forget to INCLUDE the extension
@@ -58,11 +77,18 @@ public class MainActivity extends Activity {
             //output to LogCat
             Log.i("test", output);
             try {
-                json = new JSONObject(output);
-                Log.i("try", json.toString());
-                QAs = json.getJSONArray("question-answers");
+                fullFile = new JSONObject(output);
+                Log.i("try", fullFile.toString());
+                QAs = fullFile.getJSONArray("question-answers");
                 Log.i("try", QAs.toString());
                 who = QAs.getJSONObject(0);
+                what = QAs.getJSONObject(1);
+                categoriesWhat = what.getJSONArray("answers");
+                for()
+                how = QAs.getJSONObject(2);
+                why = QAs.getJSONObject(3);
+                where = QAs.getJSONObject(4);
+                when = QAs.getJSONObject(5);
                 Log.i("try", who.toString());
                 answers = who.getJSONArray("answers");
                 Log.i("try", answers.toString());
@@ -110,7 +136,7 @@ public class MainActivity extends Activity {
         //return the output stream as a String
         return oS.toString();
     }
-
+/*
     public class DownloadTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -187,7 +213,7 @@ public class MainActivity extends Activity {
 
         }
     }
-
+*/
 
 
 
