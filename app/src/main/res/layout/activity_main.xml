@@ -7,25 +7,68 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="app.thomasgalligani.myapplication.MainActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/button"
-        android:layout_alignParentTop="true"
-        android:id="@+id/message" />
+    tools:context="com.example.nick.basicapp.MainActivity">
 
     <Button
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
+        android:text="ABC..."
         android:id="@+id/button"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="true" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="41dp"
-        android:onClick="click" />
+        android:layout_above="@+id/button"
+        android:columnCount="7"
+        android:rowCount="11"
+        android:id="@+id/grids">
+
+        <Button
+            android:layout_width="365dp"
+            android:layout_height="102dp"
+            android:text="Good! :)"
+            android:id="@+id/button3"
+            android:layout_row="4"
+            android:layout_column="6" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="133dp"
+            android:text="Mad! >:("
+            android:id="@+id/button4"
+            android:layout_row="8"
+            android:layout_column="6" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="113dp"
+            android:text="Sad :&apos;("
+            android:id="@+id/button5"
+            android:layout_row="10"
+            android:layout_column="6" />
+
+    </GridLayout>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter"
+        android:id="@+id/button2"
+        android:layout_below="@+id/grids"
+        android:layout_alignParentStart="true"
+        android:onClick="processText" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/grids" />
+
+
 </RelativeLayout>
