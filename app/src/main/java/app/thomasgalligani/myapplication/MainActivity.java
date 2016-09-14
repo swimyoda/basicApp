@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,13 +35,14 @@ public class MainActivity extends Activity {
 
     private String output;
     private Resources resources;
+    private EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
-
+        editText = (EditText)findViewById(R.id.editText);
         //DownloadTask task = new DownloadTask();
         // task.execute("http://api.openweathermap.org/data/2.5/weather?q=London,uk");
         //task.execute("http://api.openweathermap.org/data/2.5/weather?q={Boston}&APPID=adf401838d67c27778aeefe3f0b9f239");
@@ -48,6 +50,8 @@ public class MainActivity extends Activity {
 
     public void click(View view)
     {
+        String input = getString(R.id.editText);
+
         JSONObject fullFile;
         JSONArray QAs;
 
@@ -56,8 +60,7 @@ public class MainActivity extends Activity {
 
         JSONObject what;
         JSONArray categoriesWhat;
-        ArrayList<JSONObject> categoryNamesWhat = new ArrayList<JSONObject>;
-        ArrayList<JSONArray> answersWhat = new ArrayList<JSONArray>;
+        ArrayList<ArrayList<JSONArray>> answersWhat = new ArrayList<ArrayList<JSONArray>>();
 
         JSONObject how;
         JSONArray answersHow;
@@ -84,14 +87,24 @@ public class MainActivity extends Activity {
                 who = QAs.getJSONObject(0);
                 what = QAs.getJSONObject(1);
                 categoriesWhat = what.getJSONArray("answers");
-                for()
+                for(JSONArray a: categoriesWhat)
+                {
+                    for(JSONArray b: a)
+                    {
+                        answersWhat<JSONArray>.add(b);
+                    }
+                }/*
                 how = QAs.getJSONObject(2);
                 why = QAs.getJSONObject(3);
                 where = QAs.getJSONObject(4);
                 when = QAs.getJSONObject(5);
                 Log.i("try", who.toString());
-                answers = who.getJSONArray("answers");
-                Log.i("try", answers.toString());
+                answers = who.getJSONArray("answers");*/
+                for(ArrayList<JSONArray> q: answersWhat)
+                {
+                    for(JSONArray j: q)
+                        Log.i("try", q.toString());
+                }
 
             }
             catch(JSONException e)
@@ -111,6 +124,12 @@ public class MainActivity extends Activity {
 
 
     }
+
+    private String processText(String question)
+    {
+
+    }
+
 
     public String LoadFile(String fileName, boolean loadFromRawFolder) throws IOException
     {
