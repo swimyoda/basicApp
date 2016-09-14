@@ -1,8 +1,5 @@
+package app.thomasgalligani.myapplication;
 
-//this is the one that attempts to make and destroy buttons
-
-
-package com.example.nick.basicapp;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -12,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,42 +28,55 @@ import java.net.URL;
 import java.util.Iterator;
 import java.io.FileReader;
 import java.io.BufferedReader;
-
-
-import android.content.res.Resources;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridLayout;
-import android.widget.LinearLayout;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
 
-    private Resources resources;
+public class MainActivity extends Activity {
+
     private String output;
-
+    private Resources resources;
+    private EditText editText;
+    private ArrayList<String> questions = new ArrayList<String>();
+    private ArrayList<String> answers = new ArrayList<String>();
+    private ArrayList<String> words = new ArrayList<String>();
+    private ArrayList<String> questionWords = new ArrayList<String>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)  {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
-
+        editText = (EditText)findViewById(R.id.editText);
+        //DownloadTask task = new DownloadTask();
+        // task.execute("http://api.openweathermap.org/data/2.5/weather?q=London,uk");
+        //task.execute("http://api.openweathermap.org/data/2.5/weather?q={Boston}&APPID=adf401838d67c27778aeefe3f0b9f239");
     }
-
-
 
     public void click(View view)
     {
-        JSONObject json;
+        String input = getString(R.id.editText);
+
+        JSONObject fullFile;
         JSONArray QAs;
+
         JSONObject who;
-        JSONArray answers;
+        JSONArray answersWho;
+
+        JSONObject what;
+        JSONArray categoriesWhat;
+        ArrayList<ArrayList<JSONArray>> answersWhat = new ArrayList<ArrayList<JSONArray>>();
+
+        JSONObject how;
+        JSONArray answersHow;
+
+        JSONObject why;
+        JSONArray answersWhy;
+
+        JSONObject where;
+        JSONArray answersWhere;
+
+        JSONObject when;
+        JSONArray answersWhen;
         try
         {
             //Load the file from assets folder - don't forget to INCLUDE the extension
@@ -73,14 +84,31 @@ public class MainActivity extends AppCompatActivity {
             //output to LogCat
             Log.i("test", output);
             try {
-                json = new JSONObject(output);
-                Log.i("try", json.toString());
-                QAs = json.getJSONArray("question-answers");
+                fullFile = new JSONObject(output);
+                Log.i("try", fullFile.toString());
+                QAs = fullFile.getJSONArray("question-answers");
                 Log.i("try", QAs.toString());
                 who = QAs.getJSONObject(0);
+                what = QAs.getJSONObject(1);
+                categoriesWhat = what.getJSONArray("answers");
+                for(JSONArray a: categoriesWhat)
+                {
+                    for(JSONArray b: a)
+                    {
+                        answersWhat<JSONArray>.add(b);
+                    }
+                }/*
+                how = QAs.getJSONObject(2);
+                why = QAs.getJSONObject(3);
+                where = QAs.getJSONObject(4);
+                when = QAs.getJSONObject(5);
                 Log.i("try", who.toString());
-                answers = who.getJSONArray("answers");
-                Log.i("try", answers.toString());
+                answers = who.getJSONArray("answers");*/
+                for(ArrayList<JSONArray> q: answersWhat)
+                {
+                    for(JSONArray j: q)
+                        Log.i("try", q.toString());
+                }
 
             }
             catch(JSONException e)
@@ -100,6 +128,105 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    // Determines what kind of question the inputted question is
+    private String processText(String input)
+    {
+        ArrayList<String> wordified = wordify(input);
+        String question = findKeyword(questions, input);
+
+        switch(question)
+        {
+            case "who":
+                return whoQuestion(wordified);
+            case "what":
+                return whatQuestion(wordified);
+            case "where":
+                return whereQuestion(wordified);
+            case "when":
+                return whenQuestion(wordified);
+            case "why":
+                return whyQuestion(wordified);
+            case "do":
+                return doQuestion(wordified);
+            case "how":
+                return howQuestion(wordified);
+            case null:
+                return null;
+        }
+    }
+
+    private ArrayList<String> wordify(String sentence)
+    {
+        ArrayList<String> words = new ArrayList<String>();
+        int start = 0;
+        for(int i = 0; i < sentence.length(); i++)
+        {
+            if(sentence.charAt(i) == " " || i == sentence.length() - 1)
+            {
+                words.add(sentence.substring(start, i).toLowerCase());
+                i++;
+                start = i;
+            }
+        }
+        return words;
+    }
+
+    public String findKeyword(ArrayList<String> words, ArrayList<String> arr)
+    {
+        for(String word: arr)
+        {
+            for(String w: words)
+            {
+                if(word.equals(w))
+                {
+                    return word;
+                }
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<String> howQuestion()
+    {
+        ArrayList<String> answers = new ArrayList<String>();
+        answers.add("Good!");
+        answers.add("Okay");
+        answers.add("Bad!");
+        return answers;
+    }
+    public ArrayList<String> doQuestion()
+    {
+        ArrayList<String> answers = new ArrayList<String>();
+        answers.add("Yes");
+        answers.add("Maybe");
+        answers.add("No");
+        return answers;
+    }
+    public ArrayList<String> whenQuestion()
+    {
+        ArrayList<String> answers = new ArrayList<String>();
+        answers.add("Yesterday");
+        for(int i = 1; i <= 12; i++){
+            answers.add(i + " o'clock");
+        }
+        answers.add("Tomorrow");
+        return answers;
+    }
+    public ArrayList<String> whatQuestion(ArrayList<String> s)
+    {
+        String keyword = findKeyword(s, words);
+        int index;
+        for(int i = 0; i < questions.size(); i++){
+            if (questions.get(i).contains(keyword) == true){
+                index = i;
+                break;
+            }
+        }
+        return answers.get(index);
+    }
+
+
 
     public String LoadFile(String fileName, boolean loadFromRawFolder) throws IOException
     {
@@ -125,135 +252,85 @@ public class MainActivity extends AppCompatActivity {
         //return the output stream as a String
         return oS.toString();
     }
+/*
+    public class DownloadTask extends AsyncTask<String, Void, String> {
 
-    public void processText(View view)
-    {
-        EditText text = (EditText)findViewById(R.id.query);
+        @Override
+        protected String doInBackground(String... urls) {
 
-    }
+            String result = "";
+            URL url;
+            HttpURLConnection urlConnection = null;
 
-    /*
-     * changes the input from sentance form into an arraylist of indevidual words
-     */
-    private ArrayList<String> wordify(String sentence)
-    {
-        ArrayList<String> words1 = new ArrayList<String>();
-        int start = 0;
-        for(int i = 0; i < sentence.length(); i++)
-        {
-            if((sentence.charAt(i) == ' ' || i == sentence.length()-1) || sentence.charAt(i) == '?')
-            {
-                words1.add(sentence.substring(start,i).toLowerCase());
-                i++;
-                start = i;
-            }
-        }
-        return words1;
-    }
+            try {
+                url = new URL(urls[0]);
 
-    /*
-    *   Comparing individual words with inputted array of words to check (returns word if match, returns null if no match)
-    */
-    public String findKeyword(ArrayList<String> words2, ArrayList<String> arr) {
-        ArrayList<String> w2;
-        for(String word: arr) {
-            for(String w: words2) {
-                w2 = wordify(w);
-                for(String w3: w2)
-                {
-                    if(word.compareToIgnoreCase(w3) == 0) {
-                        return word;
-                    }
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                InputStream in = urlConnection.getInputStream();
+
+                InputStreamReader reader = new InputStreamReader(in);
+
+                int data = reader.read();
+
+                while (data != -1) {
+
+                    char current = (char) data;
+
+                    result += current;
+
+                    data = reader.read();
 
                 }
-            }
-        }
-        return null;
-    }
 
-    public String findKeyword2(ArrayList<String> words2, ArrayList<String> arr) {
-        for(String word: arr) {
-            for(String w: words2) {
-                if(word.compareToIgnoreCase(w) == 0) {
-                    return word;
+                return result;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            try {
+
+                JSONObject jsonObject = new JSONObject(result);
+                System.out.println("added1: " + jsonObject);
+                String weatherInfo = jsonObject.getString("weather");
+
+                System.out.println("added2: " + weatherInfo);
+                Log.i("Weather content", weatherInfo);
+
+                JSONArray arr = new JSONArray(weatherInfo);
+
+                System.out.println("added3: " + arr);
+
+                for (int i = 0; i < arr.length(); i++) {
+
+                    JSONObject jsonPart = arr.getJSONObject(i);
+                    System.out.println("added " + i + ": " + jsonPart);
+                    Log.i("main", jsonPart.getString("main"));
+                    Log.i("description", jsonPart.getString("description"));
+
                 }
 
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }
-        return null;
-    }
 
 
-    public ArrayList<String> howQuestion(ArrayList<String> s){
-        int index =0;
-        String keyword = findKeyword2(s, words);
-        for(int i = 0; i < questions.size(); i++){
-            if(questions.get(i).contains("How")){
-                if (questions.get(i).contains(keyword)){
-                    index = i;
-                    break;
-                }
-            }
-        }
-        return answers.get(index);
-    }
-    public ArrayList<String> doQuestion(ArrayList<String> s){
-        int index =0;
-        String keyword = findKeyword2(s, words);
-        for(int i = 0; i < questions.size(); i++){
-            if(questions.get(i).contains("Do")){
-                if (questions.get(i).contains(keyword)){
-                    index = i;
-                    break;
-                }
-            }
-        }
-        return answers.get(index);
-    }
-    public ArrayList<String> whenQuestion(ArrayList<String> s){
-        int index =0;
-        String keyword = findKeyword2(s, words);
-        for(int i = 0; i < questions.size(); i++){
-            if(questions.get(i).contains("When")){
-                if (questions.get(i).contains(keyword)){
-                    index = i;
-                    break;
-                }
-            }
-        }
-        return answers.get(index);
-    }
-    public ArrayList<String> whatQuestion(ArrayList<String> s){
-        int index =0;
-        String keyword = findKeyword2(s, words);
-        for(int i = 0; i < questions.size(); i++){
-            if(questions.get(i).contains("What")){
-                if (questions.get(i).contains(keyword)){
-                    index = i;
-                    break;
-                }
-            }
-        }
-        return answers.get(index);
-    }
-private void buttonSet(ArrayList<String> answers) {
-    ArrayList<Button> buttons = new ArrayList<>();
-    GridLayout grid = (GridLayout) findViewById(R.id.grids);
-    GridLayout.Spec row = GridLayout.spec(0);
-    GridLayout.Spec colspan = GridLayout.spec(0);
-    GridLayout.LayoutParams gridLayoutParam = new GridLayout.LayoutParams(row, colspan);
-    try {
-        grid.removeAllViews();
 
+        }
     }
-    catch(Exception e) {
+*/
 
-    }
-    for(int i = 0; i < answers.size(); i++) {
-        buttons.set(i, new Button(this));
-        buttons.get(i).setText(answers.get(i));
-        grid.addView(buttons.get(i),gridLayoutParam);
 
-    }
-}
+
 }
