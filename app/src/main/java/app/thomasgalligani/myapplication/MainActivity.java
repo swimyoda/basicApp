@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,8 @@ import java.util.Iterator;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import java.util.List;
+import android.widget.RemoteViews;
 
 
 public class MainActivity extends Activity {
@@ -36,10 +39,9 @@ public class MainActivity extends Activity {
     private String outputFile;
     private Resources resources;
     private EditText editText;
-    private ArrayList<String> questions = new ArrayList<String>();
-    private ArrayList<String> answers = new ArrayList<String>();
     private ArrayList<String> words = new ArrayList<String>();
     private ArrayList<String> questionWords = new ArrayList<String>();
+    private ArrayList<String> whatWords = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,30 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         resources = getResources();
         editText = (EditText)findViewById(R.id.editText);
+        try {
+            outputFile = LoadFile("databaseTest.json", false);
+            try {
+                JSONObject fullFile = new JSONObject(outputFile);
+                JSONArray QAs = fullFile.getJSONArray("question-answers");
+                JSONArray whatWords = QAs.getJSONObject(1).getJSONArray("answers");
+                for()
+                
+            } catch (JSONException e) {
+            }
+        }
+        catch (IOException e)
+        {
+        }
+
+        whatWords.add(input.getJSONObject)
+        questionWords.add("who");
+        questionWords.add("what");
+        questionWords.add("where");
+        questionWords.add("when");
+        questionWords.add("why");
+        questionWords.add("how");
+
+
         //DownloadTask task = new DownloadTask();
         // task.execute("http://api.openweathermap.org/data/2.5/weather?q=London,uk");
         //task.execute("http://api.openweathermap.org/data/2.5/weather?q={Boston}&APPID=adf401838d67c27778aeefe3f0b9f239");
@@ -54,7 +80,9 @@ public class MainActivity extends Activity {
 
     public void click(View view)
     {
-        String input = getString(R.id.editText);
+        String input = editText.getText().toString();
+        Toast toast = Toast.makeText(this, input, Toast.LENGTH_LONG);
+        toast.show();
         String[] keywords = processText(input);
         JSONObject fullFile;
         JSONArray QAs;
@@ -65,116 +93,47 @@ public class MainActivity extends Activity {
             try {
                 fullFile = new JSONObject(outputFile);
                 QAs = fullFile.getJSONArray("question-answers");
+                answers = QAs.getJSONObject(0).getJSONArray("answers");
+                switch (keywords[0]) {
+                    case "who":
+                        answers = QAs.getJSONObject(0).getJSONArray("answers");
+                        break;
+                    case "what":
+                        JSONObject categories = QAs.getJSONObject(1).getJSONObject("answers");
+                        answers = categories.getJSONArray(keywords[1]);
+                    case "how":
+                        answers = QAs.getJSONObject(2).getJSONArray("answers");
+                        break;
+                    case "why":
+                        answers = QAs.getJSONObject(3).getJSONArray("answers");
+                        break;
+                    case "where":
+                        answers = QAs.getJSONObject(4).getJSONArray("answers");
+                        break;
+                    case "when":
+                        answers = QAs.getJSONObject(5).getJSONArray("answers");
+                        break;
+                }
+                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.activity_main);
+                remoteViews.setTextViewText(R.id.button3, answers.getString(0));
+                remoteViews.setTextViewText(R.id.button4, answers.getString(1));
+                remoteViews.setTextViewText(R.id.button5, answers.getString(2));
+
             } catch (JSONException e) {
-                Toast toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
+                toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
                 toast.show();
             }
         }
         catch (IOException e)
         {
             //display an error toast message
-            Toast toast = Toast.makeText(this, "File: not found!", Toast.LENGTH_LONG);
-            toast.show();
-        }
-        try {
-            switch (keywords[0]) {
-                case "who":
-                    answers = QAs.getJSONObject(0).getJSONArray("answers");
-                    break;
-                case "what":
-                    JSONObject categories = QAs.getJSONObject(1).getJSONObject("answers");
-                    answers = categories.getJSONObject(keywords[1]).getJSONArray();
-                case "how":
-                    answers = QAs.getJSONObject(2).getJSONArray("answers");
-                    break;
-                case "why":
-                    answers = QAs.getJSONObject(3).getJSONArray("answers");
-                    break;
-                case "where":
-                    answers = QAs.getJSONObject(4).getJSONArray("answers");
-                    break;
-                case "when":
-                    answers = QAs.getJSONObject(5).getJSONArray("answers");
-                    break;
-
-            }
-        }
-        catch(JSONException e)
-        {
-            Toast toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
+            toast = Toast.makeText(this, "File: not found!", Toast.LENGTH_LONG);
             toast.show();
         }
 
         JSONObject who;
         JSONArray answersWho;
 
-        JSONObject what;
-        JSONArray categoriesWhat;
-        ArrayList<ArrayList<JSONArray>> answersWhat = new ArrayList<ArrayList<JSONArray>>();
-
-        JSONObject how;
-        JSONArray answersHow;
-
-        JSONObject why;
-        JSONArray answersWhy;
-
-        JSONObject where;
-        JSONArray answersWhere;
-
-        JSONObject when;
-        JSONArray answersWhen;
-        try
-        {
-            //Load the file from assets folder - don't forget to INCLUDE the extension
-            output = LoadFile("databaseTest.json", false);
-            //output to LogCat
-            Log.i("test", output);
-            try {
-                fullFile = new JSONObject(output);
-                Log.i("try", fullFile.toString());
-                QAs = fullFile.getJSONArray("question-answers");
-
-
-
-
-
-                Log.i("try", QAs.toString());
-                who = QAs.getJSONObject(0);
-                what = QAs.getJSONObject(1);
-                categoriesWhat = what.getJSONArray("answers");
-                for(JSONArray a: categoriesWhat)
-                {
-                    for(JSONArray b: a)
-                    {
-                        answersWhat<JSONArray>.add(b);
-                    }
-                }/*
-                how = QAs.getJSONObject(2);
-                why = QAs.getJSONObject(3);
-                where = QAs.getJSONObject(4);
-                when = QAs.getJSONObject(5);
-                Log.i("try", who.toString());
-                answers = who.getJSONArray("answers");*/
-                for(ArrayList<JSONArray> q: answersWhat)
-                {
-                    for(JSONArray j: q)
-                        Log.i("try", q.toString());
-                }
-
-            }
-            catch(JSONException e)
-            {
-                Toast toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
-                toast.show();
-            }
-
-        }
-        catch (IOException e)
-        {
-            //display an error toast message
-            Toast toast = Toast.makeText(this, "File: not found!", Toast.LENGTH_LONG);
-            toast.show();
-        }
 
 
 
@@ -187,18 +146,21 @@ public class MainActivity extends Activity {
         ArrayList<String> wordified = wordify(input);
         String question = findKeyword(questions, wordified);
         String[] output = new String[2];
-        switch(question)
-        {
+        switch(question) {
             case "what":
                 output[0] = question;
                 output[1] = findKeyword(wordified, whatWords);
                 break;
-            case default:
+            case "who":
+            case "how":
+            case "where":
+            case "when":
+            case "why":
                 output[0] = question;
                 output[1] = null;
                 break;
-            return output;
         }
+            return output;
     }
 
     private ArrayList<String> wordify(String sentence)
@@ -207,7 +169,7 @@ public class MainActivity extends Activity {
         int start = 0;
         for(int i = 0; i < sentence.length(); i++)
         {
-            if(sentence.charAt(i) == " " || i == sentence.length() - 1)
+            if(sentence.charAt(i) == ' ' || i == sentence.length() - 1)
             {
                 words.add(sentence.substring(start, i).toLowerCase());
                 i++;
@@ -232,33 +194,7 @@ public class MainActivity extends Activity {
         return null;
     }
 
-    public ArrayList<String> howQuestion()
-    {
-        ArrayList<String> answers = new ArrayList<String>();
-        answers.add("Good!");
-        answers.add("Okay");
-        answers.add("Bad!");
-        return answers;
-    }
-    public ArrayList<String> doQuestion()
-    {
-        ArrayList<String> answers = new ArrayList<String>();
-        answers.add("Yes");
-        answers.add("Maybe");
-        answers.add("No");
-        return answers;
-    }
-    public ArrayList<String> whenQuestion()
-    {
-        ArrayList<String> answers = new ArrayList<String>();
-        answers.add("Yesterday");
-        for(int i = 1; i <= 12; i++){
-            answers.add(i + " o'clock");
-        }
-        answers.add("Tomorrow");
-        return answers;
-    }
-    public ArrayList<String> whatQuestion(ArrayList<String> s)
+   /* public ArrayList<String> whatQuestion(ArrayList<String> s)
     {
         String keyword = findKeyword(s, words);
         int index;
@@ -269,8 +205,7 @@ public class MainActivity extends Activity {
             }
         }
         return answers.get(index);
-    }
-
+    }*/
 
     public String LoadFile(String fileName, boolean loadFromRawFolder) throws IOException
     {
