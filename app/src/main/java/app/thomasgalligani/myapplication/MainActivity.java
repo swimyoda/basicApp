@@ -48,23 +48,22 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
-        editText = (EditText)findViewById(R.id.editText);
+        editText = (EditText)findViewById(R.id.editText);/*
         try {
             outputFile = LoadFile("databaseTest.json", false);
             try {
                 JSONObject fullFile = new JSONObject(outputFile);
                 JSONArray QAs = fullFile.getJSONArray("question-answers");
                 JSONArray whatWords = QAs.getJSONObject(1).getJSONArray("answers");
-                for()
-                
+
+
             } catch (JSONException e) {
             }
         }
         catch (IOException e)
         {
-        }
-
-        whatWords.add(input.getJSONObject)
+        }*/
+        whatWords.add("color");
         questionWords.add("who");
         questionWords.add("what");
         questionWords.add("where");
@@ -144,7 +143,7 @@ public class MainActivity extends Activity {
     private String[] processText(String input)
     {
         ArrayList<String> wordified = wordify(input);
-        String question = findKeyword(questions, wordified);
+        String question = findKeyword(questionWords, wordified);
         String[] output = new String[2];
         switch(question) {
             case "what":
