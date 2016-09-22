@@ -3,14 +3,17 @@ package app.thomasgalligani.myapplication;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 import android.widget.RemoteViews;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 
 public class MainActivity extends Activity {
 
@@ -42,28 +49,34 @@ public class MainActivity extends Activity {
     private ArrayList<String> words = new ArrayList<String>();
     private ArrayList<String> questionWords = new ArrayList<String>();
     private ArrayList<String> whatWords = new ArrayList<String>();
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
-        editText = (EditText)findViewById(R.id.editText);/*
+        editText = (EditText) findViewById(id.editText);
         try {
             outputFile = LoadFile("databaseTest.json", false);
             try {
                 JSONObject fullFile = new JSONObject(outputFile);
                 JSONArray QAs = fullFile.getJSONArray("question-answers");
                 JSONArray whatWords = QAs.getJSONObject(1).getJSONArray("answers");
+                for (int i = 0; i < whatWords.length(); i++) {
 
+                }
 
             } catch (JSONException e) {
             }
+        } catch (IOException e) {
         }
-        catch (IOException e)
-        {
-        }*/
-        whatWords.add("color");
+
+
         questionWords.add("who");
         questionWords.add("what");
         questionWords.add("where");
@@ -75,10 +88,12 @@ public class MainActivity extends Activity {
         //DownloadTask task = new DownloadTask();
         // task.execute("http://api.openweathermap.org/data/2.5/weather?q=London,uk");
         //task.execute("http://api.openweathermap.org/data/2.5/weather?q={Boston}&APPID=adf401838d67c27778aeefe3f0b9f239");
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    public void click(View view)
-    {
+    public void click(View view) {
         String input = editText.getText().toString();
         Toast toast = Toast.makeText(this, input, Toast.LENGTH_LONG);
         toast.show();
@@ -113,18 +128,26 @@ public class MainActivity extends Activity {
                         answers = QAs.getJSONObject(5).getJSONArray("answers");
                         break;
                 }
-                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.activity_main);
-                remoteViews.setTextViewText(R.id.button3, answers.getString(0));
-                remoteViews.setTextViewText(R.id.button4, answers.getString(1));
-                remoteViews.setTextViewText(R.id.button5, answers.getString(2));
+
+                ArrayList<Button> buttons = new ArrayList<Button>(4);
+                GridLayout grid = (GridLayout)findViewById(R.id.gridLayout);
+                buttons.add((Button) findViewById(R.id.Button1));
+                buttons.add((Button) findViewById(R.id.Button2));
+                buttons.add((Button) findViewById(R.id.Button3));
+                buttons.add((Button) findViewById(R.id.Button4));
+                for (Button b : buttons) {
+                    for (int i = 0; i < b.length(); i++){
+                            buttons.get(i).setText(answers.get(i).toString());
+
+                    }
+                }
+
 
             } catch (JSONException e) {
                 toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
                 toast.show();
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             //display an error toast message
             toast = Toast.makeText(this, "File: not found!", Toast.LENGTH_LONG);
             toast.show();
@@ -134,18 +157,15 @@ public class MainActivity extends Activity {
         JSONArray answersWho;
 
 
-
-
     }
 
 
     //done--------------
-    private String[] processText(String input)
-    {
+    private String[] processText(String input) {
         ArrayList<String> wordified = wordify(input);
         String question = findKeyword(questionWords, wordified);
         String[] output = new String[2];
-        switch(question) {
+        switch (question) {
             case "what":
                 output[0] = question;
                 output[1] = findKeyword(wordified, whatWords);
@@ -159,17 +179,14 @@ public class MainActivity extends Activity {
                 output[1] = null;
                 break;
         }
-            return output;
+        return output;
     }
 
-    private ArrayList<String> wordify(String sentence)
-    {
+    private ArrayList<String> wordify(String sentence) {
         ArrayList<String> words = new ArrayList<String>();
         int start = 0;
-        for(int i = 0; i < sentence.length(); i++)
-        {
-            if(sentence.charAt(i) == ' ' || i == sentence.length() - 1)
-            {
+        for (int i = 0; i < sentence.length(); i++) {
+            if (sentence.charAt(i) == ' ' || i == sentence.length() - 1) {
                 words.add(sentence.substring(start, i).toLowerCase());
                 i++;
                 start = i;
@@ -178,14 +195,10 @@ public class MainActivity extends Activity {
         return words;
     }
 
-    public String findKeyword(ArrayList<String> words, ArrayList<String> arr)
-    {
-        for(String word: arr)
-        {
-            for(String w: words)
-            {
-                if(word.equals(w))
-                {
+    public String findKeyword(ArrayList<String> words, ArrayList<String> arr) {
+        for (String word : arr) {
+            for (String w : words) {
+                if (word.equals(w)) {
                     return word;
                 }
             }
@@ -206,8 +219,7 @@ public class MainActivity extends Activity {
         return answers.get(index);
     }*/
 
-    public String LoadFile(String fileName, boolean loadFromRawFolder) throws IOException
-    {
+    public String LoadFile(String fileName, boolean loadFromRawFolder) throws IOException {
         //Create a InputStream to read the file into
         InputStream iS;
 
@@ -230,85 +242,94 @@ public class MainActivity extends Activity {
         //return the output stream as a String
         return oS.toString();
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://app.thomasgalligani.myapplication/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://app.thomasgalligani.myapplication/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
 /*
     public class DownloadTask extends AsyncTask<String, Void, String> {
-
         @Override
         protected String doInBackground(String... urls) {
-
             String result = "";
             URL url;
             HttpURLConnection urlConnection = null;
-
             try {
                 url = new URL(urls[0]);
-
                 urlConnection = (HttpURLConnection) url.openConnection();
-
                 InputStream in = urlConnection.getInputStream();
-
                 InputStreamReader reader = new InputStreamReader(in);
-
                 int data = reader.read();
-
                 while (data != -1) {
-
                     char current = (char) data;
-
                     result += current;
-
                     data = reader.read();
-
                 }
-
                 return result;
-
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return null;
         }
-
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
             try {
-
                 JSONObject jsonObject = new JSONObject(result);
                 System.out.println("added1: " + jsonObject);
                 String weatherInfo = jsonObject.getString("weather");
-
                 System.out.println("added2: " + weatherInfo);
                 Log.i("Weather content", weatherInfo);
-
                 JSONArray arr = new JSONArray(weatherInfo);
-
                 System.out.println("added3: " + arr);
-
                 for (int i = 0; i < arr.length(); i++) {
-
                     JSONObject jsonPart = arr.getJSONObject(i);
                     System.out.println("added " + i + ": " + jsonPart);
                     Log.i("main", jsonPart.getString("main"));
                     Log.i("description", jsonPart.getString("description"));
-
                 }
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
-
         }
     }
 */
 
 
-
-}
