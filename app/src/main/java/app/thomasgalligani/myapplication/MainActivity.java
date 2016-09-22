@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
-        editText = (EditText) findViewById(id.editText);
+        editText = (EditText) findViewById(R.id.editText);
         try {
             outputFile = LoadFile("databaseTest.json", false);
             try {
@@ -95,8 +95,7 @@ public class MainActivity extends Activity {
 
     public void click(View view) {
         String input = editText.getText().toString();
-        Toast toast = Toast.makeText(this, input, Toast.LENGTH_LONG);
-        toast.show();
+        Toast toast;
         String[] keywords = processText(input);
         JSONObject fullFile;
         JSONArray QAs;
@@ -129,18 +128,18 @@ public class MainActivity extends Activity {
                         break;
                 }
 
-                ArrayList<Button> buttons = new ArrayList<Button>(4);
-                GridLayout grid = (GridLayout)findViewById(R.id.gridLayout);
-                buttons.add((Button) findViewById(R.id.Button1));
-                buttons.add((Button) findViewById(R.id.Button2));
-                buttons.add((Button) findViewById(R.id.Button3));
-                buttons.add((Button) findViewById(R.id.Button4));
-                for (Button b : buttons) {
-                    for (int i = 0; i < b.length(); i++){
-                            buttons.get(i).setText(answers.get(i).toString());
 
-                    }
-                }
+                GridLayout grid = (GridLayout)findViewById(R.id.gridLayout);
+
+                Button button1 = (Button) findViewById(R.id.Button1);
+                button1.setText(answers.get(0).toString());
+                Button button2 = (Button) findViewById(R.id.Button2);
+                button2.setText(answers.get(1).toString());
+                Button button3 = (Button) findViewById(R.id.Button3);
+                button3.setText(answers.get(2).toString());
+                Button button4 = (Button) findViewById(R.id.Button4);
+                button4.setText(answers.get(3).toString());
+
 
 
             } catch (JSONException e) {
@@ -333,3 +332,4 @@ public class MainActivity extends Activity {
 */
 
 
+}
