@@ -17,6 +17,13 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
+import android.content.Intent;
+import android.speech.RecognizerIntent;
+import android.content.ActivityNotFoundException;
+import android.support.v7.app.AppCompatActivity;
+
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +53,7 @@ public class MainActivity extends Activity {
     private ArrayList<String> words = new ArrayList<String>();
     private ArrayList<String> questionWords = new ArrayList<String>();
     private ArrayList<String> whatWords = new ArrayList<String>();
-
+    private String speachText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,9 +87,15 @@ public class MainActivity extends Activity {
 
 
     }
+    public void ask(View view){
+        promptSpeechInput();
+    }
 
-    public void click(View view) {
-        String input = editText.getText().toString();
+    public void click() {
+        String input;
+        input = editText.getText().toString();
+        input = speachText;
+        editText.setText(speachText);
         Toast toast;
         String[] keywords = processText(input);
         JSONObject fullFile;
@@ -101,7 +114,7 @@ public class MainActivity extends Activity {
                         break;
                     case "what":
                         JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
-                        answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length()-1)));
+                        answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
                         Log.i("Answers", answers.toString());
                         break;
                     case "how":
@@ -153,7 +166,7 @@ public class MainActivity extends Activity {
     private String[] processText(String input) {
         ArrayList<String> wordified = wordify(input);
         String question = findKeyword(questionWords, wordified);
-        question = question.substring(0,question.length()-1);
+        question = question.substring(0,question.length() - 1);
         Log.i("question", question);
         String[] output = new String[2];
         switch (question) {
@@ -287,5 +300,37 @@ public class MainActivity extends Activity {
     }
 */
 
+
+    public void promptSpeechInput()
+    {
+        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say Something");
+
+        try
+        {
+            startActivityForResult(i, 100);
+        }
+        catch (ActivityNotFoundException e)
+        {
+            Toast.makeText(MainActivity.this, "Sorry, your device doesn't support speech-language", Toast.LENGTH_LONG).show();
+        }
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent i)
+    {
+        super.onActivityResult(requestCode, resultCode, i);
+        switch(requestCode)
+        {
+            case 100:
+                if (resultCode == RESULT_OK && i != null)
+                {
+                    ArrayList<String> result = i.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    speachText = result.get(0);
+                    click();
+                }
+                break;
+        }
+    }
 
 }
