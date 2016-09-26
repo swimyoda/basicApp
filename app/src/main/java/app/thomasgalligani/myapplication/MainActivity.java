@@ -36,9 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import android.widget.RemoteViews;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MainActivity extends Activity {
@@ -49,11 +46,6 @@ public class MainActivity extends Activity {
     private ArrayList<String> words = new ArrayList<String>();
     private ArrayList<String> questionWords = new ArrayList<String>();
     private ArrayList<String> whatWords = new ArrayList<String>();
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +58,14 @@ public class MainActivity extends Activity {
             try {
                 JSONObject fullFile = new JSONObject(outputFile);
                 JSONArray QAs = fullFile.getJSONArray("question-answers");
-                JSONArray whatWords = QAs.getJSONObject(1).getJSONArray("answers");
-                for (int i = 0; i < whatWords.length(); i++) {
-
+                JSONArray whatWordsJ = QAs.getJSONObject(1).getJSONArray("answers");
+                for (int i = 0; i < whatWordsJ.length(); i++) {
+                    whatWords.add(whatWordsJ.getJSONArray(i).getString(4));
+                    Log.i("something",whatWordsJ.getJSONArray(i).getString(4));
                 }
 
             } catch (JSONException e) {
+                Log.i("somtheing else", "couldnt read");
             }
         } catch (IOException e) {
         }
@@ -85,12 +79,6 @@ public class MainActivity extends Activity {
         questionWords.add("how");
 
 
-        //DownloadTask task = new DownloadTask();
-        // task.execute("http://api.openweathermap.org/data/2.5/weather?q=London,uk");
-        //task.execute("http://api.openweathermap.org/data/2.5/weather?q={Boston}&APPID=adf401838d67c27778aeefe3f0b9f239");
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     public void click(View view) {
@@ -112,8 +100,10 @@ public class MainActivity extends Activity {
                         answers = QAs.getJSONObject(0).getJSONArray("answers");
                         break;
                     case "what":
-                        JSONObject categories = QAs.getJSONObject(1).getJSONObject("answers");
-                        answers = categories.getJSONArray(keywords[1]);
+                        JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
+                        answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length()-1)));
+                        Log.i("Answers", answers.toString());
+                        break;
                     case "how":
                         answers = QAs.getJSONObject(2).getJSONArray("answers");
                         break;
@@ -163,11 +153,14 @@ public class MainActivity extends Activity {
     private String[] processText(String input) {
         ArrayList<String> wordified = wordify(input);
         String question = findKeyword(questionWords, wordified);
+        question = question.substring(0,question.length()-1);
+        Log.i("question", question);
         String[] output = new String[2];
         switch (question) {
             case "what":
                 output[0] = question;
                 output[1] = findKeyword(wordified, whatWords);
+                Log.i("key", output[1]);
                 break;
             case "who":
             case "how":
@@ -178,6 +171,7 @@ public class MainActivity extends Activity {
                 output[1] = null;
                 break;
         }
+        Log.i("ouput", output[0] + output[1]);
         return output;
     }
 
@@ -195,10 +189,12 @@ public class MainActivity extends Activity {
     }
 
     public String findKeyword(ArrayList<String> words, ArrayList<String> arr) {
+        int arrInd = -1;
         for (String word : arr) {
+            arrInd++;
             for (String w : words) {
                 if (word.equals(w)) {
-                    return word;
+                    return word+arrInd;
                 }
             }
         }
@@ -240,46 +236,6 @@ public class MainActivity extends Activity {
 
         //return the output stream as a String
         return oS.toString();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://app.thomasgalligani.myapplication/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://app.thomasgalligani.myapplication/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
     }
 /*
     public class DownloadTask extends AsyncTask<String, Void, String> {
