@@ -64,10 +64,10 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter"
-        android:id="@+id/Enter"
+        android:text="Speak"
+        android:id="@+id/talk"
+        android:onClick="ask"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:onClick="click" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
