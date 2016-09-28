@@ -332,7 +332,7 @@ public class MainActivity extends Activity {
                 if (resultCode == RESULT_OK && i != null)
                 {
                     ArrayList<String> result = i.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    speachText = result.get(0);
+                    speachText = result.get(0).substring(0,1).toUpperCase() + result.get(0)+"?".substring(1);
                     click();
                 }
                 break;
