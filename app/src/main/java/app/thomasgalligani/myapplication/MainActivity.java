@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
                 }
 
             } catch (JSONException e) {
-                Log.i("somtheing else", "couldnt read");
+                Log.i("something else", "couldn't read");
             }
         } catch (IOException e) {
         }
@@ -92,68 +92,74 @@ public class MainActivity extends Activity {
     }
 
     public void click() {
-        String input;
-        input = editText.getText().toString();
-        input = speachText;
-        editText.setText(speachText);
-        Toast toast;
-        String[] keywords = processText(input);
-        JSONObject fullFile;
-        JSONArray QAs;
-        JSONArray answers;
-
         try {
-            outputFile = LoadFile("databaseTest.json", false);
+            String input;
+            input = editText.getText().toString();
+            input = speachText;
+            editText.setText(speachText);
+            Toast toast;
+            String[] keywords = processText(input);
+            JSONObject fullFile;
+            JSONArray QAs;
+            JSONArray answers;
+
+
             try {
-                fullFile = new JSONObject(outputFile);
-                QAs = fullFile.getJSONArray("question-answers");
-                answers = QAs.getJSONObject(0).getJSONArray("answers");
-                switch (keywords[0]) {
-                    case "who":
-                        answers = QAs.getJSONObject(0).getJSONArray("answers");
-                        break;
-                    case "what":
-                        JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
-                        answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
-                        Log.i("Answers", answers.toString());
-                        break;
-                    case "how":
-                        answers = QAs.getJSONObject(2).getJSONArray("answers");
-                        break;
-                    case "why":
-                        answers = QAs.getJSONObject(3).getJSONArray("answers");
-                        break;
-                    case "where":
-                        answers = QAs.getJSONObject(4).getJSONArray("answers");
-                        break;
-                    case "when":
-                        answers = QAs.getJSONObject(5).getJSONArray("answers");
-                        break;
+                outputFile = LoadFile("databaseTest.json", false);
+                try {
+                    fullFile = new JSONObject(outputFile);
+                    QAs = fullFile.getJSONArray("question-answers");
+                    answers = QAs.getJSONObject(0).getJSONArray("answers");
+                    switch (keywords[0]) {
+                        case "who":
+                            answers = QAs.getJSONObject(0).getJSONArray("answers");
+                            break;
+                        case "what":
+                            JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
+                            answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
+                            Log.i("Answers", answers.toString());
+                            break;
+                        case "how":
+                            answers = QAs.getJSONObject(2).getJSONArray("answers");
+                            break;
+                        case "why":
+                            answers = QAs.getJSONObject(3).getJSONArray("answers");
+                            break;
+                        case "where":
+                            answers = QAs.getJSONObject(4).getJSONArray("answers");
+                            break;
+                        case "when":
+                            answers = QAs.getJSONObject(5).getJSONArray("answers");
+                            break;
+                    }
+
+
+                    GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
+
+                    Button button1 = (Button) findViewById(R.id.Button1);
+                    button1.setText(answers.get(0).toString());
+                    Button button2 = (Button) findViewById(R.id.Button2);
+                    button2.setText(answers.get(1).toString());
+                    Button button3 = (Button) findViewById(R.id.Button3);
+                    button3.setText(answers.get(2).toString());
+                    Button button4 = (Button) findViewById(R.id.Button4);
+                    button4.setText(answers.get(3).toString());
+
+
+                } catch (JSONException e) {
+                    toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
+                    toast.show();
                 }
-
-
-                GridLayout grid = (GridLayout)findViewById(R.id.gridLayout);
-
-                Button button1 = (Button) findViewById(R.id.Button1);
-                button1.setText(answers.get(0).toString());
-                Button button2 = (Button) findViewById(R.id.Button2);
-                button2.setText(answers.get(1).toString());
-                Button button3 = (Button) findViewById(R.id.Button3);
-                button3.setText(answers.get(2).toString());
-                Button button4 = (Button) findViewById(R.id.Button4);
-                button4.setText(answers.get(3).toString());
-
-
-
-            } catch (JSONException e) {
-                toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
+            } catch (IOException e) {
+                //display an error toast message
+                toast = Toast.makeText(this, "File: not found!", Toast.LENGTH_LONG);
                 toast.show();
             }
-        } catch (IOException e) {
-            //display an error toast message
-            toast = Toast.makeText(this, "File: not found!", Toast.LENGTH_LONG);
-            toast.show();
         }
+        catch(Exception e) {
+            Toast.makeText(MainActivity.this, "Please ask a question first", Toast.LENGTH_LONG).show();
+        }
+
 
         JSONObject who;
         JSONArray answersWho;
