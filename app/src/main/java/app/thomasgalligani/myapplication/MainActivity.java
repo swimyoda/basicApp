@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
@@ -54,12 +55,27 @@ public class MainActivity extends Activity {
     private ArrayList<String> questionWords = new ArrayList<String>();
     private ArrayList<String> whatWords = new ArrayList<String>();
     private String speachText;
+    TextToSpeech voice;
+    String b1 = "";
+    String b2 = "";
+    String b3 = "";
+    String b4 = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
+        voice =new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    voice.setLanguage(Locale.US);
+                }
+            }
+        });
         editText = (EditText) findViewById(R.id.editText);
+
         try {
             outputFile = LoadFile("databaseTest.json", false);
             try {
@@ -86,6 +102,43 @@ public class MainActivity extends Activity {
         questionWords.add("how");
 
 
+    }
+    public void answer1(View view){
+        Toast toast;
+        try {
+            voice.speak(((Button)(findViewById(R.id.Button1))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+        }
+        catch(Exception e) {
+            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+        }
+        }
+
+    public void answer2(View view){
+        Toast toast;
+        try {
+            voice.speak(((Button)(findViewById(R.id.Button2))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+        }
+        catch(Exception e) {
+            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+        }
+    }
+    public void answer3(View view){
+        Toast toast;
+        try {
+            voice.speak(((Button)(findViewById(R.id.Button3))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+        }
+        catch(Exception e) {
+            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+        }
+    }
+    public void answer4(View view){
+        Toast toast;
+        try {
+            voice.speak(((Button)(findViewById(R.id.Button4))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+        }
+        catch(Exception e) {
+            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+        }
     }
     public void ask(View view){
         promptSpeechInput();
@@ -144,6 +197,8 @@ public class MainActivity extends Activity {
                     button3.setText(answers.get(2).toString());
                     Button button4 = (Button) findViewById(R.id.Button4);
                     button4.setText(answers.get(3).toString());
+
+
 
 
                 } catch (JSONException e) {
@@ -332,7 +387,7 @@ public class MainActivity extends Activity {
                 if (resultCode == RESULT_OK && i != null)
                 {
                     ArrayList<String> result = i.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    speachText = result.get(0).substring(0,1).toUpperCase() + result.get(0)+"?".substring(1);
+                    speachText = result.get(0);
                     click();
                 }
                 break;
