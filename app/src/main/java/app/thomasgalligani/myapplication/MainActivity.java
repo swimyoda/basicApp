@@ -2,47 +2,28 @@ package app.thomasgalligani.myapplication;
 
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
-import android.text.Layout;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.Locale;
-import android.content.Intent;
-import android.speech.RecognizerIntent;
-import android.content.ActivityNotFoundException;
-import android.support.v7.app.AppCompatActivity;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.io.FileReader;
-import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.List;
-import android.widget.RemoteViews;
+import java.util.Locale;
 
 
 
@@ -147,7 +128,6 @@ public class MainActivity extends Activity {
     public void click() {
         try {
             String input;
-            input = editText.getText().toString();
             input = speachText;
             editText.setText(speachText);
             Toast toast;
@@ -170,7 +150,8 @@ public class MainActivity extends Activity {
                         case "what":
                             JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
                             answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
-                            Log.i("Answers", answers.toString());
+                            //toast = Toast.makeText(this, answers.toString(), Toast.LENGTH_LONG);
+                            //toast.show();
                             break;
                         case "how":
                             answers = QAs.getJSONObject(2).getJSONArray("answers");
@@ -211,7 +192,7 @@ public class MainActivity extends Activity {
                 toast.show();
             }
         }
-        catch(Exception e) {
+        catch(NullPointerException e) {
             Toast.makeText(MainActivity.this, "Please ask a question first", Toast.LENGTH_LONG).show();
         }
 
@@ -230,11 +211,13 @@ public class MainActivity extends Activity {
         question = question.substring(0,question.length() - 1);
         Log.i("question", question);
         String[] output = new String[2];
+        Log.i("question", "1");
         switch (question) {
             case "what":
                 output[0] = question;
+                Log.i("question", "2");
                 output[1] = findKeyword(wordified, whatWords);
-                Log.i("key", output[1]);
+                Log.i("question", "3");
                 break;
             case "who":
             case "how":
@@ -245,15 +228,18 @@ public class MainActivity extends Activity {
                 output[1] = null;
                 break;
         }
+        Log.i("question", "4");
+        Log.i("output1", output[1]);
         Log.i("ouput", output[0] + output[1]);
+        Log.i("question", "5");
         return output;
     }
 
     private ArrayList<String> wordify(String sentence) {
         ArrayList<String> words = new ArrayList<String>();
         int start = 0;
-        for (int i = 0; i < sentence.length(); i++) {
-            if (sentence.charAt(i) == ' ' || i == sentence.length() - 1) {
+        for (int i = 0; i <= sentence.length(); i++) {
+            if (i == sentence.length() || sentence.charAt(i) == ' ') {
                 words.add(sentence.substring(start, i).toLowerCase());
                 i++;
                 start = i;
@@ -267,6 +253,7 @@ public class MainActivity extends Activity {
         for (String word : arr) {
             arrInd++;
             for (String w : words) {
+                Log.i("matches",word + " " + w);
                 if (word.equals(w)) {
                     return word+arrInd;
                 }
