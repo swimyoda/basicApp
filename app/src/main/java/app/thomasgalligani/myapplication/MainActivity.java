@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
         catch(Exception e) {
             toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
         }
-        }
+    }
 
     public void answer2(View view){
         Toast toast;
@@ -229,8 +229,8 @@ public class MainActivity extends Activity {
                 break;
         }
         Log.i("question", "4");
-        Log.i("output1", output[1]);
-        Log.i("ouput", output[0] + output[1]);
+        //Log.i("output1", output[1]);
+        //Log.i("ouput", output[0] + output[1]);
         Log.i("question", "5");
         return output;
     }
@@ -239,7 +239,7 @@ public class MainActivity extends Activity {
         ArrayList<String> words = new ArrayList<String>();
         int start = 0;
         for (int i = 0; i <= sentence.length(); i++) {
-            if (i == sentence.length() || sentence.charAt(i) == ' ') {
+            if (sentence.charAt(i) == '?' || sentence.charAt(i) == ' ') {
                 words.add(sentence.substring(start, i).toLowerCase());
                 i++;
                 start = i;
@@ -374,7 +374,7 @@ public class MainActivity extends Activity {
                 if (resultCode == RESULT_OK && i != null)
                 {
                     ArrayList<String> result = i.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    speachText = result.get(0);
+                    speachText = result.get(0).substring(0, 1).toUpperCase() + result.get(0).substring(1)+"?";
                     click();
                 }
                 break;
