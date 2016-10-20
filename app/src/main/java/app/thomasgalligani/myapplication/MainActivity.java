@@ -222,7 +222,7 @@ public class MainActivity extends Activity {
 
 
                 } catch (JSONException e) {
-                    toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
+                    toast = Toast.makeText(this, "JSON is messed up!", Toast.LENGTH_LONG);
                     toast.show();
                 }
             } catch (IOException e) {
