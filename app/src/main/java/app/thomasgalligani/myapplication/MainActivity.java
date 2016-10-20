@@ -42,11 +42,49 @@ public class MainActivity extends Activity {
     String b3 = "";
     String b4 = "";
 
-    @Override
+ @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
+        SmsManager smsManager = SmsManager.getDefault();
+
+
+        try{
+
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"
+                    + "+19789181911")));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + "+19789181911"));
+            intent.putExtra("sms_body", "This works dipshit");
+            startActivity(intent);
+
+        }
+        catch(Exception f) {
+            Log.i("Error", "This is what is wrong");
+        }
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                makeUseOfNewLocation(location);
+
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+        Toast toast;
+        try{
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        }
+        catch(SecurityException s) {
+            toast = Toast.makeText(this, "Location services are currently offline", Toast.LENGTH_LONG);
+        }
         voice =new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -55,6 +93,7 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
         editText = (EditText) findViewById(R.id.editText);
 
         try {
@@ -262,18 +301,7 @@ public class MainActivity extends Activity {
         return null;
     }
 
-   /* public ArrayList<String> whatQuestion(ArrayList<String> s)
-    {
-        String keyword = findKeyword(s, words);
-        int index;
-        for(int i = 0; i < questions.size(); i++){
-            if (questions.get(i).contains(keyword) == true){
-                index = i;
-                break;
-            }
-        }
-        return answers.get(index);
-    }*/
+  
 
     public String LoadFile(String fileName, boolean loadFromRawFolder) throws IOException {
         //Create a InputStream to read the file into
@@ -298,55 +326,6 @@ public class MainActivity extends Activity {
         //return the output stream as a String
         return oS.toString();
     }
-/*
-    public class DownloadTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-            String result = "";
-            URL url;
-            HttpURLConnection urlConnection = null;
-            try {
-                url = new URL(urls[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = urlConnection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(in);
-                int data = reader.read();
-                while (data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-                return result;
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-                System.out.println("added1: " + jsonObject);
-                String weatherInfo = jsonObject.getString("weather");
-                System.out.println("added2: " + weatherInfo);
-                Log.i("Weather content", weatherInfo);
-                JSONArray arr = new JSONArray(weatherInfo);
-                System.out.println("added3: " + arr);
-                for (int i = 0; i < arr.length(); i++) {
-                    JSONObject jsonPart = arr.getJSONObject(i);
-                    System.out.println("added " + i + ": " + jsonPart);
-                    Log.i("main", jsonPart.getString("main"));
-                    Log.i("description", jsonPart.getString("description"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-*/
 
 
     public void promptSpeechInput()
@@ -379,6 +358,13 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
+    }
+    public void makeUseOfNewLocation(Location l) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"
+                + "+19789181911")));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + "+19789181911"));
+        intent.putExtra("sms_body", l.toString());
+        startActivity(intent);
     }
 
 }
