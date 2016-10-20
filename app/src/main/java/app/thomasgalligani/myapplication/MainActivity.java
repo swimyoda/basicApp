@@ -3,6 +3,7 @@ package app.thomasgalligani.myapplication;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -32,6 +34,12 @@ public class MainActivity extends Activity {
     private String outputFile;
     private Resources resources;
     private EditText editText;
+    private Button button1;
+    private Button button2;
+    private Button button3;
+    private Button button4;
+    private Button speakButton;
+    private Button enterButton;
     private ArrayList<String> words = new ArrayList<String>();
     private ArrayList<String> questionWords = new ArrayList<String>();
     private ArrayList<String> whatWords = new ArrayList<String>();
@@ -41,6 +49,7 @@ public class MainActivity extends Activity {
     String b2 = "";
     String b3 = "";
     String b4 = "";
+    int currentQuestionWord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +65,13 @@ public class MainActivity extends Activity {
             }
         });
         editText = (EditText) findViewById(R.id.editText);
+        button1 = (Button)(findViewById(R.id.Button1));
+        button2 = (Button)(findViewById(R.id.Button2));
+        button3 = (Button)(findViewById(R.id.Button2));
+        button4 = (Button)(findViewById(R.id.Button2));
+        speakButton = (Button)(findViewById(R.id.talk));
+        enterButton = (Button)(findViewById(R.id.enter));
+
 
         try {
             outputFile = LoadFile("databaseTest.json", false);
@@ -135,9 +151,11 @@ public class MainActivity extends Activity {
         if(buttonText.contains("ADD"))
         {
             try {
-                editText.setText("Click HERE to add answer choices");
+                editText.setText("Click HERE to add missing answer choices");
                 editText.selectAll();
-                voice.speak("Click SPEAK to add " + addWhat + " to answer choices.", TextToSpeech.QUEUE_FLUSH, null);
+                voice.speak("Click HERE to add a missing answer choice", TextToSpeech.QUEUE_FLUSH, null);
+                enterButton.setVisibility(View.VISIBLE);
+                speakButton.setVisibility(View.GONE);
             }
             catch(Exception e) {
                 toast = Toast.makeText(this, "shiiiiiiiii", Toast.LENGTH_LONG);
@@ -416,6 +434,22 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
+    }
+
+    public void addAnswer(View view) {
+        View view2 = this.getCurrentFocus();
+        if (view2 != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        String question = editText.getText().toString();
+        enterButton.setVisibility(View.GONE);
+        speakButton.setVisibility(View.VISIBLE);
+    }
+
+    public void deleteText(View view)
+    {
+        editText.setText("");
     }
 
 }
