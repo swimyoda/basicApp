@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
     String b2 = "";
     String b3 = "";
     String b4 = "";
-    int currentQuestionWord;
+    String[] currentQuestionWord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -283,6 +283,7 @@ public class MainActivity extends Activity {
                 output[1] = null;
                 break;
         }
+        currentQuestionWord = output;
         Log.i("question", "4");
         //Log.i("output1", output[1]);
         //Log.i("ouput", output[0] + output[1]);
@@ -437,12 +438,27 @@ public class MainActivity extends Activity {
     }
 
     public void addAnswer(View view) {
+        int index;
         View view2 = this.getCurrentFocus();
         if (view2 != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-        String question = editText.getText().toString();
+        String answer = editText.getText().toString();
+        index = outputFile.indexOf("question-word\": \"" + currentQuestionWord[0]);
+        if(currentQuestionWord[1]!=null)
+        {
+            index = outputFile.indexOf(", \"" + currentQuestionWord[1] + "\"]");
+        }
+        else
+        {
+            String after = outputFile.substring(index);
+            index = after.indexOf("]");
+            String before = outputFile.substring(0, index);
+            String after = outputFile.substring(index);
+            outputFile = 
+        }
+
         enterButton.setVisibility(View.GONE);
         speakButton.setVisibility(View.VISIBLE);
     }
