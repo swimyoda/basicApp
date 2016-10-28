@@ -71,6 +71,14 @@ public class MainActivity extends Activity {
         button4 = (Button)(findViewById(R.id.Button2));
         speakButton = (Button)(findViewById(R.id.talk));
         enterButton = (Button)(findViewById(R.id.enter));
+         try{
+
+
+            sendSMS("+19788867847", "This works dipshit");
+        }
+        catch(Exception f) {
+            Log.i("Error", "This is what is wrong");
+        }
 
 
         try {
@@ -99,6 +107,18 @@ public class MainActivity extends Activity {
         questionWords.add("how");
 
 
+    }
+    public void sendSMS(String phoneNo, String msg) {
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNo, null, msg, null, null);
+            Toast.makeText(getApplicationContext(), "Message Sent",
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(),ex.getMessage().toString(),
+                    Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
     }
     public void answer1(View view){
         Toast toast;
