@@ -3,7 +3,6 @@ package app.thomasgalligani.myapplication;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -28,171 +26,147 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 
-
 public class MainActivity extends Activity {
+
 
     private String outputFile;
     private Resources resources;
     private EditText editText;
     private Button button1;
+    private String b1 = "";
     private Button button2;
+    private String b2 = "";
     private Button button3;
+    private String b3 = "";
     private Button button4;
+    private String b4 = "";
     private Button speakButton;
-    private Button enterButton;
+    private Toast toast;
     private ArrayList<String> words = new ArrayList<String>();
     private ArrayList<String> questionWords = new ArrayList<String>();
     private ArrayList<String> whatWords = new ArrayList<String>();
     private String speachText;
-    TextToSpeech voice;
-    String b1 = "";
-    String b2 = "";
-    String b3 = "";
-    String b4 = "";
-    String[] currentQuestionWord;
+    private TextToSpeech voice;
+    private String[] currentQuestionWord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
-        voice =new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+
+        voice = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
+                if (status != TextToSpeech.ERROR) {
                     voice.setLanguage(Locale.US);
                 }
             }
         });
-        editText = (EditText) findViewById(R.id.editText);
-        button1 = (Button)(findViewById(R.id.Button1));
-        button2 = (Button)(findViewById(R.id.Button2));
-        button3 = (Button)(findViewById(R.id.Button2));
-        button4 = (Button)(findViewById(R.id.Button2));
-        speakButton = (Button)(findViewById(R.id.talk));
-        enterButton = (Button)(findViewById(R.id.enter));
-         try{
 
-
-            sendSMS("+19788867847", "This works dipshit");
-        }
-        catch(Exception f) {
-            Log.i("Error", "This is what is wrong");
-        }
-
+        editText = (EditText) findViewById(R.id.editText);//Text field on top of display
+        button1 = (Button) (findViewById(R.id.Button1));
+        button2 = (Button) (findViewById(R.id.Button2));
+        button3 = (Button) (findViewById(R.id.Button2));
+        button4 = (Button) (findViewById(R.id.Button2));//answer choice buttons
+        speakButton = (Button) (findViewById(R.id.talk));//button to activate voice recognition
 
         try {
             outputFile = LoadFile("databaseTest.json", false);
-            try {
-                JSONObject fullFile = new JSONObject(outputFile);
-                JSONArray QAs = fullFile.getJSONArray("question-answers");
-                JSONArray whatWordsJ = QAs.getJSONObject(1).getJSONArray("answers");
-                for (int i = 0; i < whatWordsJ.length(); i++) {
-                    whatWords.add(whatWordsJ.getJSONArray(i).getString(4));
-                    Log.i("something",whatWordsJ.getJSONArray(i).getString(4));
-                }
 
-            } catch (JSONException e) {
-                Log.i("something else", "couldn't read");
+            //breaks down full JSON file to find the subcategories of what currently stored in the database
+            JSONObject fullFile = new JSONObject(outputFile);
+            JSONArray QAs = fullFile.getJSONArray("question-answers");
+            JSONArray whatWordsJ = QAs.getJSONObject(1).getJSONArray("answers");
+            for (int i = 0; i < whatWordsJ.length(); i++) {//finds the subcategory which is stored as the last element of the the possible answers array
+                whatWords.add(whatWordsJ.getJSONArray(i).getString(4));
+                Log.i("What words", whatWordsJ.getJSONArray(i).getString(4));
             }
-        } catch (IOException e) {
+         } catch (JSONException e) {
+            //Log.i("something else", "couldn't read");
         }
-
-
+        catch(IOException e)
+        {
+            //Log.i("something else", "no file");
+        }
         questionWords.add("who");
         questionWords.add("what");
         questionWords.add("where");
         questionWords.add("when");
         questionWords.add("why");
         questionWords.add("how");
-
-
     }
-    public void sendSMS(String phoneNo, String msg) {
-        try {
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNo, null, msg, null, null);
-            Toast.makeText(getApplicationContext(), "Message Sent",
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception ex) {
-            Toast.makeText(getApplicationContext(),ex.getMessage().toString(),
-                    Toast.LENGTH_LONG).show();
-            ex.printStackTrace();
-        }
-    }
+
+    //onCLick for the first button
     public void answer1(View view){
-        Toast toast;
+        //highlights button 1
         ((Button)(findViewById(R.id.Button1))).setBackgroundColor(0xA11D79D5);
         ((Button)(findViewById(R.id.Button2))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button3))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button4))).setBackgroundColor(0x00000000);
+
+        //reads the selected answer aloud
         try {
             voice.speak(((Button)(findViewById(R.id.Button1))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
         }
         catch(Exception e) {
-            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+            toast = Toast.makeText(this, "Error: 1", Toast.LENGTH_LONG);
         }
     }
 
+    //onCLick method for button 2
     public void answer2(View view){
-        Toast toast;
+        //highlights button 2
         ((Button)(findViewById(R.id.Button2))).setBackgroundColor(0xA11D79D5);
         ((Button)(findViewById(R.id.Button1))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button3))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button4))).setBackgroundColor(0x00000000);
+
+        //reads the selected answer aloud
         try {
             voice.speak(((Button)(findViewById(R.id.Button2))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
         }
         catch(Exception e) {
-            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+            toast = Toast.makeText(this, "Error: 1", Toast.LENGTH_LONG);
         }
     }
+
+    //onClick method for button 3
     public void answer3(View view){
-        Toast toast;
+        //highlights button 3
         ((Button)(findViewById(R.id.Button3))).setBackgroundColor(0xA11D79D5);
         ((Button)(findViewById(R.id.Button1))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button2))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button4))).setBackgroundColor(0x00000000);
+
+        //reads the selected answer aloud
         try {
             voice.speak(((Button)(findViewById(R.id.Button3))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
         }
         catch(Exception e) {
-            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+            toast = Toast.makeText(this, "Error: 1", Toast.LENGTH_LONG);
         }
     }
+
+    //onClick method for button 4
     public void answer4(View view){
-        Toast toast;
+        //highlights button 4
         ((Button)(findViewById(R.id.Button4))).setBackgroundColor(0xA11D79D5);
         ((Button)(findViewById(R.id.Button1))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button2))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button3))).setBackgroundColor(0x00000000);
-        String buttonText = ((Button)(findViewById(R.id.Button4))).getText().toString();
-        String addWhat = buttonText.substring(buttonText.indexOf("ADD")+4);
-        if(buttonText.contains("ADD"))
-        {
-            try {
-                editText.setText("Click HERE to add missing answer choices");
-                editText.selectAll();
-                voice.speak("Click HERE to add a missing answer choice", TextToSpeech.QUEUE_FLUSH, null);
-                enterButton.setVisibility(View.VISIBLE);
-                speakButton.setVisibility(View.GONE);
-            }
-            catch(Exception e) {
-                toast = Toast.makeText(this, "shiiiiiiiii", Toast.LENGTH_LONG);
-            }
-        }
-        else
-        {
-            try {
-                voice.speak(buttonText, TextToSpeech.QUEUE_FLUSH, null);
-            }
-            catch(Exception e) {
-                toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
-            }
-        }
 
+        //reads teh selected answer aloud
+        try {
+            voice.speak(((Button)(findViewById(R.id.Button4))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+        }
+        catch(Exception e) {
+            toast = Toast.makeText(this, "Error: 1", Toast.LENGTH_LONG);
+        }
     }
-    public void ask(View view){
+
+    //onCLick method for speak button
+    public void speak(View view){
         ((Button)(findViewById(R.id.Button1))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button2))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button3))).setBackgroundColor(0x00000000);
@@ -200,33 +174,37 @@ public class MainActivity extends Activity {
         promptSpeechInput();
     }
 
-    public void click() {
-        try {
-            String input;
-            input = speachText;
+    //called once a question has been heard by the voice recognition
+    private void interperateQuestion() {
+
+        try {//catches a null pointer exception
+            String input= speachText;
+            //displays the question in the text field
             editText.setText(speachText);
-            Toast toast;
-            String[] keywords = processText(input);
+
+            String[] keywords = processText(input);//finds 2 keywords, the first being the question word, the second being the subcategory (if applicable)
+
             JSONObject fullFile;
             JSONArray QAs;
             JSONArray answers;
-
-
-            try {
+            try {//catches a problem reading the file
                 outputFile = LoadFile("databaseTest.json", false);
-                try {
+                try {//catches a JSON formating problem in the database
+
+                    //breaks down the database into the array of possible question types
                     fullFile = new JSONObject(outputFile);
                     QAs = fullFile.getJSONArray("question-answers");
-                    answers = QAs.getJSONObject(0).getJSONArray("answers");
+
+                    answers = new JSONArray();
+                    //breaks finds the answers based on the kind of question
                     switch (keywords[0]) {
                         case "who":
                             answers = QAs.getJSONObject(0).getJSONArray("answers");
                             break;
-                        case "what":
+                        case "what"://a special case, since there are subcategories within this question type
                             JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
                             answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
-                            //toast = Toast.makeText(this, answers.toString(), Toast.LENGTH_LONG);
-                            //toast.show();
+                            //Toast.makeText(this, answers.toString(), Toast.LENGTH_LONG)show();
                             break;
                         case "how":
                             answers = QAs.getJSONObject(2).getJSONArray("answers");
@@ -241,10 +219,9 @@ public class MainActivity extends Activity {
                             answers = QAs.getJSONObject(5).getJSONArray("answers");
                             break;
                     }
-
-
                     GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
 
+                    //sets each button to a possible answers
                     Button button1 = (Button) findViewById(R.id.Button1);
                     button1.setText(answers.get(0).toString());
                     Button button2 = (Button) findViewById(R.id.Button2);
@@ -254,45 +231,31 @@ public class MainActivity extends Activity {
                     Button button4 = (Button) findViewById(R.id.Button4);
                     button4.setText(answers.get(3).toString());
 
-
-
-
                 } catch (JSONException e) {
-                    toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
-                    toast.show();
+                    Toast.makeText(this, "Error:2", Toast.LENGTH_LONG).show();
                 }
             } catch (IOException e) {
-                //display an error toast message
-                toast = Toast.makeText(this, "File: not found!", Toast.LENGTH_LONG);
-                toast.show();
+                Toast.makeText(this, "Error: 3", Toast.LENGTH_LONG).show();
             }
         }
         catch(NullPointerException e) {
-            Toast.makeText(MainActivity.this, "Please ask a question first", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Error: 4", Toast.LENGTH_LONG).show();
         }
-
-
-        JSONObject who;
-        JSONArray answersWho;
-
-
     }
 
 
-    //done--------------
+    //Finds the one or two keywords in the parameter and returns them in an array
+    //The second element will be returned as NULL if the question type does not necessitate a subcategory
     private String[] processText(String input) {
-        ArrayList<String> wordified = wordify(input);
-        String question = findKeyword(questionWords, wordified);
-        question = question.substring(0,question.length() - 1);
-        Log.i("question", question);
+
+        ArrayList<String> wordified = wordify(input);//changes the question from a multi-word string to an array of on-word strings
+        String question = findKeyword(questionWords, wordified);//finds the question type based on the question word found in the wordified array
+        question = question.substring(0,question.length() - 1);//removes the index from the end of the question word that was added as part of the findKeyword method
         String[] output = new String[2];
-        Log.i("question", "1");
         switch (question) {
             case "what":
                 output[0] = question;
-                Log.i("question", "2");
                 output[1] = findKeyword(wordified, whatWords);
-                Log.i("question", "3");
                 break;
             case "who":
             case "how":
@@ -300,22 +263,23 @@ public class MainActivity extends Activity {
             case "when":
             case "why":
                 output[0] = question;
-                output[1] = null;
+                output[1] = null;//who, how, where, when, and why all have no subcategories, so the second keyword slot it left null
                 break;
         }
         currentQuestionWord = output;
-        Log.i("question", "4");
         //Log.i("output1", output[1]);
         //Log.i("ouput", output[0] + output[1]);
-        Log.i("question", "5");
         return output;
     }
 
-    private ArrayList<String> wordify(String sentence) {
+    //a method to convert a question from a single string into an arraylist of strings, one for each word
+    private ArrayList<String> wordify(String sentence)
+    {
         ArrayList<String> words = new ArrayList<String>();
         int start = 0;
         for (int i = 0; i <= sentence.length(); i++) {
-            if (sentence.charAt(i) == '?' || sentence.charAt(i) == ' ') {
+            if (sentence.charAt(i) == '?' || sentence.charAt(i) == ' ') //ends the next word when it finds a space or a question mark
+            {
                 words.add(sentence.substring(start, i).toLowerCase());
                 i++;
                 start = i;
@@ -324,7 +288,9 @@ public class MainActivity extends Activity {
         return words;
     }
 
-    public String findKeyword(ArrayList<String> words, ArrayList<String> arr) {
+    //method to find a keyword from the "arr" parameter inside the "words" parameter
+    public String findKeyword(ArrayList<String> words, ArrayList<String> arr)
+    {
         int arrInd = -1;
         for (String word : arr) {
             arrInd++;
@@ -338,19 +304,7 @@ public class MainActivity extends Activity {
         return null;
     }
 
-   /* public ArrayList<String> whatQuestion(ArrayList<String> s)
-    {
-        String keyword = findKeyword(s, words);
-        int index;
-        for(int i = 0; i < questions.size(); i++){
-            if (questions.get(i).contains(keyword) == true){
-                index = i;
-                break;
-            }
-        }
-        return answers.get(index);
-    }*/
-
+    //method to load the database text file
     public String LoadFile(String fileName, boolean loadFromRawFolder) throws IOException {
         //Create a InputStream to read the file into
         InputStream iS;
@@ -374,6 +328,7 @@ public class MainActivity extends Activity {
         //return the output stream as a String
         return oS.toString();
     }
+
 /*
     public class DownloadTask extends AsyncTask<String, Void, String> {
         @Override
@@ -422,15 +377,15 @@ public class MainActivity extends Activity {
             }
         }
     }
+
 */
-
-
+    //method to initiate the speach recognition software
     public void promptSpeechInput()
     {
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say Something");
+        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say Something"); //prompts the user to ask their question
 
         try
         {
@@ -451,38 +406,57 @@ public class MainActivity extends Activity {
                 {
                     ArrayList<String> result = i.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     speachText = result.get(0).substring(0, 1).toUpperCase() + result.get(0).substring(1)+"?";
-                    click();
+                    interperateQuestion();
                 }
                 break;
         }
     }
-
+/*
     public void addAnswer(View view) {
         int index;
+        Log.i("write", "1");
         View view2 = this.getCurrentFocus();
+        Log.i("write", "2");
         if (view2 != null) {
+            Log.i("write", "3");
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
         String answer = editText.getText().toString();
+        Log.i("write", "4");
         index = outputFile.indexOf("question-word\": \"" + currentQuestionWord[0]);
+        Log.i("write", "5");
         if(currentQuestionWord[1]!=null)
         {
             index = outputFile.indexOf(", \"" + currentQuestionWord[1] + "\"]");
         }
         else
         {
+            Log.i("write", "6");
             String after = outputFile.substring(index);
-            index = after.indexOf("]");
+            index = after.indexOf("[");
+            Log.i("write", "7");
             String before = outputFile.substring(0, index);
-            String after = outputFile.substring(index);
-            outputFile = 
+            Log.i("write", "8");
+            after = outputFile.substring(index);
+            Log.i("write", "9");
+            outputFile = before+"\""+answer+"\","+after;
+        }
+        try
+        {
+            PrintWriter writer = new PrintWriter("basicApp-master/app/src/main/res/databaseTest.json");
+            Log.i("write", "10");
+            writer.print(outputFile);
+        }
+        catch(java.io.FileNotFoundException e)
+        {
+            toast = Toast.makeText(this, "Error: 5", Toast.LENGTH_LONG);
         }
 
-        enterButton.setVisibility(View.GONE);
         speakButton.setVisibility(View.VISIBLE);
-    }
+    }*/
 
+    //method to empty the text field
     public void deleteText(View view)
     {
         editText.setText("");
