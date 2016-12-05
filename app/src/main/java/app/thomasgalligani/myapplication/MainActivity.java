@@ -2,6 +2,8 @@ package app.thomasgalligani.myapplication;
 
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 
-
 public class MainActivity extends Activity {
 
     private String outputFile;
@@ -59,6 +60,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
+
+
+
         voice =new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -118,7 +122,9 @@ public class MainActivity extends Activity {
         questionWords.add("when");
         questionWords.add("why");
         questionWords.add("how");
-
+        questionWords.add("whom");
+        questionWords.add("which");
+        questionWords.add("wherefore");
 
     }
     public void sendSMS(String phoneNo, String msg) {
@@ -210,6 +216,14 @@ public class MainActivity extends Activity {
 
     }
     public void ask(View view){
+        Intent intent = new Intent();
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Notification noti = new Notification.Builder(this)
+        .setTicker("Help")
+        .setContentTitle("I've been abducted")
+        .setContentText("Yo")
+        .setSmallIcon(R.mipmap.download)
+        .setContentIntent(pIntent).getNotification();
         ((Button)(findViewById(R.id.Button1))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button2))).setBackgroundColor(0x00000000);
         ((Button)(findViewById(R.id.Button3))).setBackgroundColor(0x00000000);
@@ -237,9 +251,11 @@ public class MainActivity extends Activity {
                     answers = QAs.getJSONObject(0).getJSONArray("answers");
                     switch (keywords[0]) {
                         case "who":
+                        case "whom":
                             answers = QAs.getJSONObject(0).getJSONArray("answers");
                             break;
                         case "what":
+                        case "which":
                             JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
                             answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
                             //toast = Toast.makeText(this, answers.toString(), Toast.LENGTH_LONG);
@@ -249,6 +265,7 @@ public class MainActivity extends Activity {
                             answers = QAs.getJSONObject(2).getJSONArray("answers");
                             break;
                         case "why":
+                        case "wherefore":
                             answers = QAs.getJSONObject(3).getJSONArray("answers");
                             break;
                         case "where":
@@ -306,16 +323,19 @@ public class MainActivity extends Activity {
         Log.i("question", "1");
         switch (question) {
             case "what":
+            case "which":
                 output[0] = question;
                 Log.i("question", "2");
                 output[1] = findKeyword(wordified, whatWords);
                 Log.i("question", "3");
                 break;
             case "who":
+            case "whom":
             case "how":
             case "where":
             case "when":
             case "why":
+            case "wherefore":
                 output[0] = question;
                 output[1] = null;
                 break;
@@ -332,7 +352,7 @@ public class MainActivity extends Activity {
         ArrayList<String> words = new ArrayList<String>();
         int start = 0;
         for (int i = 0; i <= sentence.length(); i++) {
-            if (sentence.charAt(i) == '?' || sentence.charAt(i) == ' ') {
+            if (sentence.charAt(i) == '?' || sentence.charAt(i) == ' ' || sentence.charAt(i) == '\'') {
                 words.add(sentence.substring(start, i).toLowerCase());
                 i++;
                 start = i;
