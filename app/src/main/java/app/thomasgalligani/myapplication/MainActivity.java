@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -31,23 +32,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.net.*;
 
 
 public class MainActivity extends Activity {
 
     private String outputFile;
     private Resources resources;
-    private EditText editText;
+    private TextView textView;
+    private EditText usernameBox;
+    private EditText passwordBox;
     private Button button1;
     private Button button2;
     private Button button3;
     private Button button4;
     private Button speakButton;
     private Button enterButton;
+    private Button loginButton;
     private ArrayList<String> words = new ArrayList<String>();
     private ArrayList<String> questionWords = new ArrayList<String>();
     private ArrayList<String> whatWords = new ArrayList<String>();
     private String speachText;
+    private String username;
+    private String password;
+    private URL site;
+    private FakeServer server;
     TextToSpeech voice;
     String b1 = "";
     String b2 = "";
@@ -60,8 +69,15 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         resources = getResources();
+        try {
+            site = new URL("https//:www.google.com");
+        }
+        catch(MalformedURLException e)
+        {
+            Toast.makeText(getApplicationContext(), "Could not connect to the server", Toast.LENGTH_LONG).show();
+        }
 
-
+        server = new FakeServer();//fake server
 
         voice =new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -77,25 +93,28 @@ public class MainActivity extends Activity {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
         catch (SecurityException f) {
-            Toast.makeText(getApplicationContext(), "please enable location services for this app in your settings",
+            Toast.makeText(getApplicationContext(), "Please enable location services for this app in your settings",
                     Toast.LENGTH_LONG).show();
         }
         try{
 
 
-            sendSMS("+19788867847", "This works dipshit");
+            sendSMS("+19788867847", "");
         }
         catch(Exception f) {
             Log.i("Error", "This is what is wrong");
         }
 
-        editText = (EditText) findViewById(R.id.editText);
+        textView = (TextView)(findViewById(R.id.textView));
         button1 = (Button)(findViewById(R.id.Button1));
         button2 = (Button)(findViewById(R.id.Button2));
-        button3 = (Button)(findViewById(R.id.Button2));
-        button4 = (Button)(findViewById(R.id.Button2));
+        button3 = (Button)(findViewById(R.id.Button3));
+        button4 = (Button)(findViewById(R.id.Button4));
         speakButton = (Button)(findViewById(R.id.talk));
         enterButton = (Button)(findViewById(R.id.enter));
+        loginButton = (Button)(findViewById(R.id.loginButton));
+        passwordBox = (EditText)(findViewById(R.id.password));
+        usernameBox = (EditText)(findViewById(R.id.username));
 
 
         try {
@@ -125,9 +144,16 @@ public class MainActivity extends Activity {
         questionWords.add("whom");
         questionWords.add("which");
         questionWords.add("wherefore");
+        questionWords.add("will");
+        questionWords.add("do");
+        questionWords.add("shall");
+        questionWords.add("should");
+        questionWords.add("could");
+
 
     }
-    public void sendSMS(String phoneNo, String msg) {
+    public void sendSMS(String phoneNo, String msg)
+    {
         try {
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(phoneNo, null, msg, null, null);
@@ -140,7 +166,40 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void connect()throws IOException
+    {
+        URLConnection connect = site.openConnection();
+        connect.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 
+    }
+
+    public void login(View view) {
+        String name = "";
+        do{
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(passwordBox.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+            loginButton.setVisibility(View.INVISIBLE);
+            username = usernameBox.getText().toString();
+            usernameBox.setText("");
+            usernameBox.setVisibility(View.INVISIBLE);
+            password = passwordBox.getText().toString();
+            passwordBox.setText("");
+            passwordBox.setVisibility(View.INVISIBLE);
+
+
+            name = server.check(username, password);
+            if (!name.equals("")) {
+                button1.setVisibility(View.VISIBLE);
+                button2.setVisibility(View.VISIBLE);
+                button3.setVisibility(View.VISIBLE);
+                button4.setVisibility(View.VISIBLE);
+                speakButton.setVisibility(View.VISIBLE);
+                textView.setText("Welcome to PEC, " + name + ", click the SPEAK button to start");
+                voice.speak("Welcome to PEC, " + name + ", click the SPEAK button to start", TextToSpeech.QUEUE_FLUSH, null);
+            }
+        }while(name.equals(""));
+    }
 
 
     public void answer1(View view){
@@ -153,7 +212,7 @@ public class MainActivity extends Activity {
             voice.speak(((Button)(findViewById(R.id.Button1))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
         }
         catch(Exception e) {
-            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+            toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         }
     }
 
@@ -167,7 +226,7 @@ public class MainActivity extends Activity {
             voice.speak(((Button)(findViewById(R.id.Button2))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
         }
         catch(Exception e) {
-            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+            toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         }
     }
     public void answer3(View view){
@@ -180,7 +239,7 @@ public class MainActivity extends Activity {
             voice.speak(((Button)(findViewById(R.id.Button3))).getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
         }
         catch(Exception e) {
-            toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+            toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         }
     }
     public void answer4(View view){
@@ -193,16 +252,6 @@ public class MainActivity extends Activity {
         String addWhat = buttonText.substring(buttonText.indexOf("ADD")+4);
         if(buttonText.contains("ADD"))
         {
-            try {
-                editText.setText("Click HERE to add missing answer choices");
-                editText.selectAll();
-                voice.speak("Click HERE to add a missing answer choice", TextToSpeech.QUEUE_FLUSH, null);
-                enterButton.setVisibility(View.VISIBLE);
-                speakButton.setVisibility(View.GONE);
-            }
-            catch(Exception e) {
-                toast = Toast.makeText(this, "shiiiiiiiii", Toast.LENGTH_LONG);
-            }
         }
         else
         {
@@ -210,7 +259,7 @@ public class MainActivity extends Activity {
                 voice.speak(buttonText, TextToSpeech.QUEUE_FLUSH, null);
             }
             catch(Exception e) {
-                toast = Toast.makeText(this, "you are a dumbass", Toast.LENGTH_LONG);
+                toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
             }
         }
 
@@ -235,7 +284,7 @@ public class MainActivity extends Activity {
         try {
             String input;
             input = speachText;
-            editText.setText(speachText);
+            textView.setText(speachText);
             Toast toast;
             String[] keywords = processText(input);
             JSONObject fullFile;
@@ -257,7 +306,9 @@ public class MainActivity extends Activity {
                         case "what":
                         case "which":
                             JSONArray categories = QAs.getJSONObject(1).getJSONArray("answers");
-                            answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
+                            if(keywords[1]!="")
+                                answers = categories.getJSONArray(Integer.parseInt(keywords[1].substring(keywords[1].length() - 1)));
+
                             //toast = Toast.makeText(this, answers.toString(), Toast.LENGTH_LONG);
                             //toast.show();
                             break;
@@ -274,8 +325,15 @@ public class MainActivity extends Activity {
                         case "when":
                             answers = QAs.getJSONObject(5).getJSONArray("answers");
                             break;
+                        case "will":
+                        case "do":
+                        case "shall":
+                        case "should":
+                        case "could":
+                            String[] a = {"Yes", "No", "Maybe", "I don't know"};
+                            answers = new JSONArray(a);
+                            break;
                     }
-
 
                     GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
 
@@ -292,7 +350,7 @@ public class MainActivity extends Activity {
 
 
                 } catch (JSONException e) {
-                    toast = Toast.makeText(this, "JSON is messed up!", Toast.LENGTH_LONG);
+                    toast = Toast.makeText(this, "JSON is mesed up!", Toast.LENGTH_LONG);
                     toast.show();
                 }
             } catch (IOException e) {
@@ -302,7 +360,16 @@ public class MainActivity extends Activity {
             }
         }
         catch(NullPointerException e) {
-            Toast.makeText(MainActivity.this, "Please ask a question first", Toast.LENGTH_LONG).show();
+            textView.setText("Try again, I couldn't hear a question");
+            voice.speak("Try again, I couldn't hear a question", TextToSpeech.QUEUE_FLUSH, null);
+            Button button1 = (Button) findViewById(R.id.Button1);
+            button1.setText("");
+            Button button2 = (Button) findViewById(R.id.Button2);
+            button2.setText("");
+            Button button3 = (Button) findViewById(R.id.Button3);
+            button3.setText("");
+            Button button4 = (Button) findViewById(R.id.Button4);
+            button4.setText("");
         }
 
 
@@ -320,6 +387,7 @@ public class MainActivity extends Activity {
         question = question.substring(0,question.length() - 1);
         Log.i("question", question);
         String[] output = new String[2];
+        output[0] = "";
         Log.i("question", "1");
         switch (question) {
             case "what":
@@ -327,6 +395,10 @@ public class MainActivity extends Activity {
                 output[0] = question;
                 Log.i("question", "2");
                 output[1] = findKeyword(wordified, whatWords);
+                if(output[1]==null)
+                {
+                    output[1] = "";
+                }
                 Log.i("question", "3");
                 break;
             case "who":
@@ -336,6 +408,11 @@ public class MainActivity extends Activity {
             case "when":
             case "why":
             case "wherefore":
+            case "will":
+            case "do":
+            case "shall":
+            case "should":
+            case "could":
                 output[0] = question;
                 output[1] = null;
                 break;
@@ -442,7 +519,7 @@ public class MainActivity extends Activity {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-        String answer = editText.getText().toString();
+        String answer = textView.getText().toString();
         index = outputFile.indexOf("question-word\": \"" + currentQuestionWord[0]);
         if(currentQuestionWord[1]!=null)
         {
@@ -463,7 +540,7 @@ public class MainActivity extends Activity {
 
     public void deleteText(View view)
     {
-        editText.setText("");
+        textView.setText("");
     }
 
 }
@@ -502,3 +579,37 @@ public class MainActivity extends Activity {
     }
 
 }
+ class FakeServer
+ {
+     private String[] passwords;
+     private String[] usernames;
+     private String[] names;
+
+     public FakeServer()
+     {
+         passwords = new String[3];
+         usernames = new String[3];
+         names = new String[3];
+         for(int i=0; i<3; i++)
+         {
+             passwords[i] = "password";
+             usernames[i] = "name";
+             names[i] = "Joe" + i;
+         }
+     }
+
+     public String check(String usrnm, String pswrd)
+     {
+         int i = 0;
+         for (String username:usernames)
+         {
+             for(String password:passwords)
+             {
+                 if(username.equals("usrnm")&&password.equals(pswrd))
+                     return names[i];
+             }
+             i++;
+         }
+        return "";
+     }
+ }
