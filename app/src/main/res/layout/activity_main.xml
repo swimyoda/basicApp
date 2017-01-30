@@ -22,31 +22,24 @@
         android:layout_alignParentStart="true">
 
         <Button
-            android:layout_width="174dp"
-            android:layout_height="105dp"
-            android:id="@+id/Button1"
-            android:layout_row="1"
-            android:layout_column="0"
-            android:onClick="answer1"
-            android:textSize="27dp" />
-
-        <Button
             android:layout_width="176dp"
             android:layout_height="105dp"
             android:id="@+id/Button2"
             android:layout_row="1"
             android:layout_column="2"
             android:onClick="answer2"
-            android:textSize="27dp" />
+            android:textSize="27dp"
+            android:visibility="invisible" />
 
         <Button
             android:layout_width="174dp"
-            android:layout_height="106dp"
-            android:id="@+id/Button3"
-            android:layout_row="2"
+            android:layout_height="105dp"
+            android:id="@+id/Button1"
+            android:layout_row="1"
             android:layout_column="0"
-            android:onClick="answer3"
-            android:textSize="27dp" />
+            android:onClick="answer1"
+            android:textSize="27dp"
+            android:visibility="invisible" />
 
         <Button
             android:layout_width="175dp"
@@ -57,29 +50,19 @@
             android:layout_row="2"
             android:layout_column="2"
             android:onClick="answer4"
-            android:textSize="27dp" />
+            android:textSize="27dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:layout_width="174dp"
+            android:layout_height="106dp"
+            android:id="@+id/Button3"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:onClick="answer3"
+            android:textSize="27dp"
+            android:visibility="invisible" />
     </GridLayout>
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/gridLayout"
-        android:textSize="25dp"
-        android:onClick="deleteText" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Speak"
-        android:id="@+id/talk"
-        android:onClick="ask"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:textSize="30dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -108,9 +91,60 @@
         android:textSize="20dp"
         android:visibility="gone"
         android:onClick="addAnswer"
-        android:layout_below="@+id/editText"
+        android:layout_below="@+id/textView"
         android:layout_alignStart="@+id/talk"
         android:layout_above="@+id/gridLayout"
         android:layout_toStartOf="@+id/button2" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Speak"
+        android:id="@+id/talk"
+        android:onClick="ask"
+        android:textSize="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:textSize="30sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginButton"
+        android:textSize="24sp"
+        android:onClick="login"
+        android:layout_alignBaseline="@+id/textView"
+        android:layout_alignBottom="@+id/textView"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/username"
+        android:hint="Username"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/password"
+        android:hint="Password"
+        android:layout_above="@+id/gridLayout"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
